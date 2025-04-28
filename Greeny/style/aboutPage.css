@@ -1,0 +1,54 @@
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      /* background-color: white; */
+      transition: all 0.5s ease-in-out;
+      backface-visibility: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .page-container {
+      perspective: 1200px;
+      position: relative;
+      width: 100%;  /* Ensure it's full width */
+      height: 80vh; /* Adjust height */
+    }
+
+    .current {
+      z-index: 30;
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+
+    .prev {
+      z-index: 20;
+      transform: translateX(-50%) scale(0.8) rotateY(25deg);
+      opacity: 0.7;
+      filter: blur(2px);
+    }
+
+    .next {
+      z-index: 20;
+      transform: translateX(50%) scale(0.8) rotateY(-25deg);
+      opacity: 0.7;
+      filter: blur(2px);
+    }
+
+    .hidden-page {
+      opacity: 0;
+      transform: translateX(-200%);
+    }
+
+    /* Hover effect for flipping pages */
+    .page:hover {
+      transform: scale(1.1);
+      transition: transform 0.3s ease-out;
+    }

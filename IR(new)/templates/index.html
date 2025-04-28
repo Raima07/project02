@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Disease Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: rgb(90, 190, 95);
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: rgb(255, 255, 255);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgb(0, 0, 0);
+        }
+        .image-preview {
+            width: 100%;
+            height: 250px;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            color: #777;
+            background-color: #f9f9f9;
+        }
+        button, input[type="file"] {
+            display: block;
+            margin: 10px auto;
+        }
+        button {
+            background-color: green;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: darkgreen;
+        }
+        #result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Plant Disease Detection Website</h1>
+        <p>Upload an image of a plant to detect possible diseases.</p>
+        <div class="image-preview" id="imagePreview">No Image Uploaded</div>
+        <input type="file" id="imageUpload" accept="image/*">
+        <button onclick="detectDisease()">Detect Disease</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        // Preview the uploaded image
+        document.getElementById('imageUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').innerHTML =
+                        '<img src="' + e.target.result + '" style="width:100%; height:100%; object-fit:cover; border-radius:5px;">';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Call the backend predict API
+        function detectDisease() {
+            const fileInput = document.getElementById('imageUpload');
+            const resultDiv = document.getElementById('result');
+
+            if (fileInput.files.length === 0) {
+                alert('Please upload an image first.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultDiv.innerText = 'Error: ' + data.error;
+                } else {
+                    resultDiv.innerText = `Predicted Disease: ${data.prediction}\n Confidence: ${(data.confidence * 100).toFixed(2)}%`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultDiv.innerText = 'An error occurred. Please try again.';
+            });
+        }
+    </script>
+</body>
+</html>
